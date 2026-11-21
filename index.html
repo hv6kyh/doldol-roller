@@ -59,12 +59,19 @@ body.ingame #combo{display:block}
 .dash{border:0;border-top:2px dashed #c9c4b8;margin:12px 0}
 .row{display:flex;justify-content:space-between;gap:10px}
 .row span:last-child{text-align:right;font-weight:700}
-.st{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;border:0;background:transparent;font:inherit;color:inherit;text-align:left;padding:6px 4px;border-bottom:1px dotted #d6d1c4;cursor:pointer}
-.st:hover:not(:disabled){background:#f1eee4}
+.stlist{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.st{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;border:2px solid #e2ddd0;border-radius:10px;background:#f3f0e6;font:inherit;color:inherit;text-align:left;padding:8px 12px;cursor:pointer;box-shadow:0 2px 0 #e2ddd0}
+.st:hover:not(:disabled){border-color:var(--ink)}
+.st:active:not(:disabled){transform:translateY(2px);box-shadow:none}
+.st.cur{border-color:var(--coral);background:#fff3ef}
 .st .no{font-weight:700;color:var(--muted)}
 .st .nm{flex:1}
-.st .sr{font-weight:700;letter-spacing:1px;color:var(--coral)}
-.st:disabled{opacity:.42;cursor:default}
+.st .sr{font-weight:700;letter-spacing:1px;color:var(--coral);white-space:nowrap}
+.st .sr em{font-style:normal;letter-spacing:0;font-size:12px;background:var(--coral);color:#fff;padding:3px 8px;border-radius:6px}
+.st:disabled{opacity:.45;cursor:default;background:transparent;box-shadow:none;border-style:dashed}
+.btn.cta{font-size:26px;min-height:72px;margin-top:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;animation:breathe 1.6s ease-in-out infinite}
+.btn.cta small{font-family:'Nanum Gothic Coding',monospace;font-size:12px;opacity:.9;margin-top:2px}
+@keyframes breathe{50%{transform:scale(1.025)}}
 .btn{display:block;width:100%;min-height:52px;border:0;border-radius:12px;background:var(--ink);color:#fff;font-family:'Black Han Sans';font-size:21px;cursor:pointer;margin-top:10px;box-shadow:0 4px 0 #000}
 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 #000}
 .btn.alt{background:#e8e4d8;color:var(--ink);box-shadow:0 4px 0 #bdb8aa;font-size:18px}
@@ -80,9 +87,14 @@ body.ingame #combo{display:block}
 @keyframes pulse{to{transform:scale(1.12)}}
 @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
 @keyframes printIn{from{transform:translateY(-40px);opacity:0}to{transform:none;opacity:1}}
-@media (prefers-reduced-motion:reduce){.rwrap{animation:none}#tear.urge{animation:none}}
+@media (prefers-reduced-motion:reduce){.rwrap,.btn.cta{animation:none}#tear.urge{animation:none}}
 @media (max-width:420px){.chip{font-size:12px;padding:0 8px}#timer{font-size:19px;min-width:48px}}
 </style>
+<script>
+!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture register identify reset opt_out_capturing".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+posthog.init('phc_LxlxkRPR9GLVWjdOY0cStbiQgEOMXT9TuI1itugRnMv',{api_host:'https://us.i.posthog.com',person_profiles:'identified_only',autocapture:false,capture_pageview:true,capture_pageleave:true,disable_session_recording:true,advanced_disable_flags:true});
+posthog.register({app:'doldol-roller'});if(new URLSearchParams(location.search).has('qa'))posthog.register({qa:true});
+</script>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -311,6 +323,7 @@ function sFail(){[392,370,349,311].forEach((f,i)=>tone(f,'sawtooth',.28,.06,f*.9
 function sMeow(){if(!AC)return;const t=AC.currentTime,o=AC.createOscillator(),lp=AC.createBiquadFilter(),g=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(620,t);o.frequency.linearRampToValueAtTime(980,t+.14);o.frequency.linearRampToValueAtTime(520,t+.5);lp.type='lowpass';lp.frequency.value=1700;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.18,t+.05);g.gain.exponentialRampToValueAtTime(.0001,t+.55);o.connect(lp);lp.connect(g);g.connect(master);o.start(t);o.stop(t+.6)}
 function audioTick(speed,down,stick){if(!AC)return;const now=AC.currentTime;rollG.gain.setTargetAtTime(down?Math.min(1,speed/2600)*.3:0,now,.04);
  if(down&&speed>200&&Math.random()<Math.min(.9,speed/3000)*(.25+stick*.75)){crackG.gain.cancelScheduledValues(now);crackG.gain.setValueAtTime(.04+Math.random()*.2*stick,now);crackG.gain.setTargetAtTime(0,now+.004,.008)}}
+const track=(e,p)=>{try{window.posthog&&posthog.capture(e,p||{})}catch(_){}};
 let lastVib=0;function vib(ms){const n=performance.now();if(n-lastVib<55)return;lastVib=n;try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
 
 /* ---------- game ---------- */
@@ -414,6 +427,7 @@ function endGame(perfect){
  const timeBonus=perfect?Math.round(g.t*25):0;g.score+=timeBonus;
  const prev=save.stars[g.idx]||0;if(stars>prev){save.stars[g.idx]=stars;persist()}
  if(stars>0){sWin();if(perfect)addFloat(500,480,'완벽',120,'#ffd166')}else sFail();
+ track('stage_end',{stage:g.idx+1,clean:Math.round(pct*1000)/10,stars,score:g.score,max_combo:g.maxCombo,sheets_used:g.st.sheets-g.sheets,perfect});
  setTimeout(()=>showResult({pct,stars,timeBonus,perfect}),perfect?900:500);
 }
 
@@ -484,21 +498,24 @@ function hide(){ov.classList.add('hide');ov.innerHTML=''}
 const starStr=n=>'★'.repeat(n)+'☆'.repeat(3-n);
 const today=()=>{const d=new Date();return`${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`};
 function unlocked(i){return i===0||(save.stars[i-1]||0)>0}
+function nextStage(){for(let i=0;i<STAGES.length;i++){if(!unlocked(i))return Math.max(0,i-1);if(!(save.stars[i]>0))return i}return STAGES.length-1}
 function showTitle(){
  if(!game||!game.preview)setupStage(0,true);
  document.body.classList.remove('ingame');
- const rows=STAGES.map((s,i)=>{const u=unlocked(i);return`<button class="st" data-i="${i}" ${u?'':'disabled'}><span class="no">${String(i+1).padStart(2,'0')}</span><span class="nm">${s.title}</span><span class="sr">${u?starStr(save.stars[i]||0):'잠김'}</span></button>`}).join('');
+ const nx=nextStage(),fresh=!Object.keys(save.stars).length;
+ const rows=STAGES.map((s,i)=>{const u=unlocked(i),cur=i===nx;return`<button class="st${cur?' cur':''}" data-i="${i}" ${u?'':'disabled'}><span class="no">${String(i+1).padStart(2,'0')}</span><span class="nm">${s.title}</span><span class="sr">${u?(save.stars[i]?starStr(save.stars[i]):'<em>도전</em>'):'🔒'}</span></button>`}).join('');
  const total=Object.values(save.stars).reduce((a,b)=>a+b,0);
- show(`<div class="sub">돌돌세탁 수습 센터 · ${today()}</div>
+ show(`<div class="sub">돌돌세탁 수습 센터</div>
  <div class="ttl">돌돌이 장인<small>영수증이랑 같이 빨아버렸다</small></div>
- <hr class="dash"><div class="sub">품목 (눌러서 시작)</div>${rows}
+ <button class="btn hot cta" id="play">${fresh?'굴리러 가기':'이어서 굴리기'}<small>${String(nx+1).padStart(2,'0')} ${STAGES[nx].title}</small></button>
+ <hr class="dash"><div class="row sub"><span>스테이지 선택</span><span>별 ${total} / 15</span></div><div class="stlist">${rows}</div>
  <hr class="dash">
  <div class="row"><span>조작</span><span>누른 채로 굴리기</span></div>
  <div class="row"><span>시트 찢기</span><span>Space · 찢기 버튼</span></div>
- <div class="row"><span>모은 별</span><span>${total} / 15</span></div>
  <hr class="dash"><div class="row"><span>합계</span><span>멘탈 0원</span></div>
  <div class="barcode"></div><div class="sub center" style="margin-top:6px">* 영수증은 세탁 전에 버려주세요 *</div>`);
- ov.querySelectorAll('.st').forEach(b=>b.onclick=()=>{initAudio();showIntro(+b.dataset.i)});
+ $('#play').onclick=()=>{initAudio();track('cta_click',{stage:nx+1});showIntro(nx)};
+ ov.querySelectorAll('.st').forEach(b=>b.onclick=()=>{initAudio();track('stage_pick',{stage:+b.dataset.i+1});showIntro(+b.dataset.i)});
 }
 function showIntro(i){
  const s=STAGES[i],dots=Math.round(s.grip*2);
@@ -510,7 +527,7 @@ function showIntro(i){
  <div class="row"><span>돌돌이 시트</span><span>${s.sheets}장</span></div>
  <hr class="dash"><div class="tip"><b>TIP</b> ${s.tip}</div>
  <button class="btn hot" id="go">굴리기 시작</button><button class="btn alt" id="back">목록</button>`);
- $('#go').onclick=()=>{initAudio();hide();setupStage(i,false);toast('누른 채로 굴려!',1.4)};
+ $('#go').onclick=()=>{initAudio();hide();setupStage(i,false);track('stage_start',{stage:i+1});toast('누른 채로 굴려!',1.4)};
  $('#back').onclick=showTitle;
 }
 function showResult(r){
